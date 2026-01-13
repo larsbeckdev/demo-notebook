@@ -211,13 +211,18 @@ button,
   font-family: inherit;
   font-size: 1rem;
   line-height: 1.5;
-  padding: 0.5rem 1rem;
+  padding: 10px;
   border: none;
   border-radius: var(--radius-sm);
   cursor: pointer;
   background-color: var(--color-primary);
   color: var(--color-primary-foreground);
   transition: background-color 0.3s ease;
+}
+
+
+button {
+  font: inherit;
 }
 
 /* =========================
@@ -260,6 +265,12 @@ header {
 main {
   min-height: calc(100vh - 100px);
   padding: 120px 0;
+}
+
+.main-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
 }
 
 .noteblock-section .section-inner {
@@ -343,28 +354,20 @@ html.dark #theme-toggle .icon-moon {
   display: grid;
   gap: 12px;
 }
+
 input,
-textarea,
-button {
+textarea {
   font: inherit;
   padding: 10px;
   border-radius: 10px;
   border: 1px solid #ccc;
 }
+
 textarea {
   min-height: 120px;
   resize: vertical;
 }
 
-
-/* .note {
-  border: 1px solid #ddd;
-  border-radius: 12px;
-  padding: 12px;
-}
-.note h3 {
-  margin: 0 0 8px;
-} */
  
 .meta {
   display: flex;
@@ -384,10 +387,7 @@ textarea {
 
 /* NOTES BOX */
 .notes-box {
-  /* background: var(--color-card, #ffffff); */
-  /* border: 1px solid rgba(0, 0, 0, 0.08); */
   border-radius: 16px;
-  /* padding: 16px; */
   max-height: 420px;
   overflow-y: auto;
 }
@@ -429,3 +429,8 @@ textarea {
 
 }
 
+.note-card__text {
+  padding: 1rem;
+  background: #ebebeb;
+  border-radius: 10px;
+}

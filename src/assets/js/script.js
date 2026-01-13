@@ -1,40 +1,30 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const STORAGE_KEY = "noteblock_notes";
+document.addEventListener("DOMContentLoaded", function () {
+  // 1) Schlüssel für localStorage
+  const NOTES_KEY = "noteblock_notes";
   const TRASH_KEY = "noteblock_trash";
 
+  // 2) Elemente aus HTML holen
   const titleEl = document.getElementById("title");
   const textEl = document.getElementById("text");
   const saveBtn = document.getElementById("saveBtn");
   const notesEl = document.getElementById("notes");
   const trashEl = document.getElementById("trashNotes");
 
-  async function loadFrom(key) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
+  // ----------------------------
+  // HELFER: Laden & Speichern
+  // ----------------------------
+
+  function load(key) {
+    // hole String aus localStorage -> mache daraus Array
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : [];
   }
 
-  async function saveTo(key, data) {
-    localStorage.setItem(key, JSON.stringify(data));
+  function save(key, array) {
+    localStorage.setItem(key, JSON.stringify(array));
   }
 
-  async function loadNotes() {
-    return loadFrom(STORAGE_KEY);
-  }
-  async function saveNotes(notes) {
-    return saveTo(STORAGE_KEY, notes);
-  }
-
-  async function loadTrash() {
-    return loadFrom(TRASH_KEY);
-  }
-  async function saveTrash(trash) {
-    return saveTo(TRASH_KEY, trash);
-  }
-
+  // Kleiner Schutz, damit HTML nicht kaputt geht
   function escapeHtml(str) {
     return String(str)
       .replaceAll("&", "&amp;")
@@ -44,9 +34,13 @@ document.addEventListener("DOMContentLoaded", () => {
       .replaceAll("'", "&#039;");
   }
 
-  // --- Render Notes ---
-  async function renderNotes() {
-    const notes = await loadNotes();
+  // ----------------------------
+  // RENDER: Notizen anzeigen
+  // ----------------------------
+
+  function renderNotes() {
+    const notes = load(NOTES_KEY);
+
     if (!notesEl) return;
 
     if (notes.length === 0) {
@@ -55,17 +49,16 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     notesEl.innerHTML = notes
-      .map(
-        (n) => `
-          <div class="note-card" data-id="${n.id}">
+      .map((n) => {
+        return `
+          <div class="note-card">
             <div class="note-card__head">
               <h3 class="note-card__title">${escapeHtml(
                 n.title || "Ohne Titel"
               )}</h3>
-              <button class="note-delete" data-action="trash" data-id="${
-                n.id
-              }" aria-label="Notiz in Papierkorb">✕</button>
+              <button data-action="trash" data-id="${n.id}">✕</button>
             </div>
+
             <p class="note-card__text">${escapeHtml(n.text).replaceAll(
               "\n",
               "<br>"
@@ -74,13 +67,14 @@ document.addEventListener("DOMContentLoaded", () => {
               n.createdAt
             ).toLocaleString()}</small>
           </div>
-        `
-      )
+        `;
+      })
       .join("");
   }
 
-  async function renderTrash() {
-    const trash = await loadTrash();
+  function renderTrash() {
+    const trash = load(TRASH_KEY);
+
     if (!trashEl) return;
 
     if (trash.length === 0) {
@@ -92,10 +86,11 @@ document.addEventListener("DOMContentLoaded", () => {
       <div style="display:flex; gap:.5rem; margin-bottom:.75rem;">
         <button data-action="empty-trash" type="button">Papierkorb leeren</button>
       </div>
+
       ${trash
-        .map(
-          (n) => `
-            <div class="note-card" data-id="${n.id}">
+        .map((n) => {
+          return `
+            <div class="note-card">
               <div class="note-card__head">
                 <h3 class="note-card__title">${escapeHtml(
                   n.title || "Ohne Titel"
@@ -103,12 +98,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div style="display:flex; gap:.5rem;">
                   <button data-action="restore" data-id="${
                     n.id
-                  }" type="button">Wiederherstellen</button>
+                  }">Wiederherstellen</button>
                   <button data-action="delete-forever" data-id="${
                     n.id
-                  }" type="button" aria-label="Endgültig löschen">Löschen</button>
+                  }">Löschen</button>
                 </div>
               </div>
+
               <p class="note-card__text">${escapeHtml(n.text).replaceAll(
                 "\n",
                 "<br>"
@@ -118,123 +114,123 @@ document.addEventListener("DOMContentLoaded", () => {
                 · Gelöscht: ${new Date(n.deletedAt).toLocaleString()}
               </small>
             </div>
-          `
-        )
+          `;
+        })
         .join("")}
     `;
   }
 
-  async function addNote() {
-    const title = titleEl?.value.trim() ?? "";
-    const text = textEl?.value.trim() ?? "";
+  // ----------------------------
+  // ACTIONS: Speichern / Löschen
+  // ----------------------------
+
+  function addNote() {
+    const title = (titleEl?.value || "").trim();
+    const text = (textEl?.value || "").trim();
 
     if (!text) {
       alert("Bitte eine Notiz eingeben.");
       return;
     }
 
-    const notes = await loadNotes();
+    const notes = load(NOTES_KEY);
 
     notes.unshift({
-      id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+      id: String(Date.now()), // reicht für Anfänger völlig
       title,
       text,
       createdAt: Date.now(),
     });
 
-    await saveNotes(notes);
+    save(NOTES_KEY, notes);
 
     if (titleEl) titleEl.value = "";
     if (textEl) textEl.value = "";
 
-    await renderNotes();
+    renderNotes();
   }
 
-  async function moveToTrash(id) {
-    const notes = await loadNotes();
+  function moveToTrash(id) {
+    const notes = load(NOTES_KEY);
+    const trash = load(TRASH_KEY);
+
+    // Note finden
     const note = notes.find((n) => n.id === id);
     if (!note) return;
 
-    const filtered = notes.filter((n) => n.id !== id);
-    await saveNotes(filtered);
+    // Note aus Notes entfernen
+    const notesWithout = notes.filter((n) => n.id !== id);
+    save(NOTES_KEY, notesWithout);
 
-    const trash = await loadTrash();
-    trash.unshift({
-      ...note,
-      deletedAt: Date.now(),
-    });
-    await saveTrash(trash);
+    // Note in Trash hinzufügen
+    trash.unshift({ ...note, deletedAt: Date.now() });
+    save(TRASH_KEY, trash);
 
-    await renderNotes();
-    await renderTrash();
+    renderNotes();
+    renderTrash();
   }
 
-  async function restoreFromTrash(id) {
-    const trash = await loadTrash();
+  function restoreFromTrash(id) {
+    const notes = load(NOTES_KEY);
+    const trash = load(TRASH_KEY);
+
     const note = trash.find((n) => n.id === id);
     if (!note) return;
 
-    const remainingTrash = trash.filter((n) => n.id !== id);
-    await saveTrash(remainingTrash);
+    // aus Trash entfernen
+    const trashWithout = trash.filter((n) => n.id !== id);
+    save(TRASH_KEY, trashWithout);
 
-    const notes = await loadNotes();
+    // zurück in Notes (deletedAt weg)
     const { deletedAt, ...restored } = note;
     notes.unshift(restored);
-    await saveNotes(notes);
+    save(NOTES_KEY, notes);
 
-    await renderNotes();
-    await renderTrash();
+    renderNotes();
+    renderTrash();
   }
 
-  async function deleteForever(id) {
-    const trash = await loadTrash();
-    const remainingTrash = trash.filter((n) => n.id !== id);
-    await saveTrash(remainingTrash);
-    await renderTrash();
+  function deleteForever(id) {
+    const trash = load(TRASH_KEY);
+    const trashWithout = trash.filter((n) => n.id !== id);
+    save(TRASH_KEY, trashWithout);
+    renderTrash();
   }
 
-  async function emptyTrash() {
-    await saveTrash([]);
-    await renderTrash();
+  function emptyTrash() {
+    save(TRASH_KEY, []);
+    renderTrash();
   }
 
-  // --- Events ---
-  if (saveBtn) {
-    saveBtn.addEventListener("click", () => addNote().catch(console.error));
-  }
+  // ----------------------------
+  // EVENTS: Klicks abfangen
+  // ----------------------------
 
-  // Enter zum Speichern (nur im Title-Feld)
-  if (titleEl) {
-    titleEl.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") addNote().catch(console.error);
-    });
-  }
+  saveBtn?.addEventListener("click", addNote);
 
-  // Notes: in Trash schieben
-  if (notesEl) {
-    notesEl.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-action='trash']");
-      if (!btn) return;
-      moveToTrash(btn.dataset.id).catch(console.error);
-    });
-  }
+  titleEl?.addEventListener("keydown", function (e) {
+    if (e.key === "Enter") addNote();
+  });
 
-  // Trash: restore / delete forever / empty
-  if (trashEl) {
-    trashEl.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-action]");
-      if (!btn) return;
+  notesEl?.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-action='trash']");
+    if (!btn) return;
+    moveToTrash(btn.dataset.id);
+  });
 
-      const action = btn.dataset.action;
-      const id = btn.dataset.id;
+  trashEl?.addEventListener("click", function (e) {
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
 
-      if (action === "restore") restoreFromTrash(id).catch(console.error);
-      if (action === "delete-forever") deleteForever(id).catch(console.error);
-      if (action === "empty-trash") emptyTrash().catch(console.error);
-    });
-  }
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
 
-  // Initial render
-  renderNotes().catch(console.error);
-  renderTrash().catch(console.error);
+    if (action === "restore") restoreFromTrash(id);
+    if (action === "delete-forever") deleteForever(id);
+    if (action === "empty-trash") emptyTrash();
+  });
+
+  // Start: einmal anzeigen
+  renderNotes();
+  renderTrash();
 });
