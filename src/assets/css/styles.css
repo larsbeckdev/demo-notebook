@@ -1,0 +1,431 @@
+/* =========================
+   Base / Reset
+========================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* =========================
+   Theme Variables          
+========================= */
+
+:root {
+  /* Layout */
+  --padding: 1rem;
+  --max-width-layout: 1920px;
+  --max-width-container: 1440px;
+
+  --radius: 0.625rem;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  /* Color */
+  --color-background-header: var(--background-header);
+  --color-background-footer: var(--background-footer);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+:root {
+  /* =========================
+   * SURFACES (neutral gray)
+   * ========================= */
+  --background: oklch(0.94 0 0);
+  --background-header: oklch(0.92 0 0);
+  --background-footer: oklch(0.92 0 0);
+
+  --card: oklch(0.99 0 0);
+  --card-foreground: oklch(0.13 0 0);
+
+  --popover: oklch(0.99 0 0);
+  --popover-foreground: oklch(0.13 0 0);
+
+  /* =========================
+   * TEXT (neutral)
+   * ========================= */
+  --foreground: oklch(0.13 0 0);
+  --muted-foreground: oklch(0.55 0 0);
+
+  /* =========================
+   * UI NEUTRALS (neutral)
+   * ========================= */
+  --secondary: oklch(0.94 0 0);
+  --secondary-foreground: oklch(0.21 0 0);
+
+  --muted: oklch(0.94 0 0);
+  --accent: oklch(0.94 0 0);
+  --accent-foreground: oklch(0.21 0 0);
+
+  --border: oklch(0.764 0 0);
+  --input: oklch(0.91 0 0);
+
+  --ring: oklch(0.74 0.06 265.755);
+
+  /* =========================
+   * BRAND / ACTION
+   * ========================= */
+  --primary: oklch(0.208 0.042 265.755);
+  --primary-foreground: oklch(0.985 0 0);
+
+  --destructive: oklch(0.577 0.245 27.325);
+}
+
+html.dark {
+  /* =========================
+   * SURFACES
+   * ========================= */
+  --background: oklch(0.15 0 0);
+  --background-header: oklch(0.17 0 0);
+  --background-footer: oklch(0.17 0 0);
+
+  --card: oklch(0.2 0 0);
+  --popover: oklch(0.2 0 0);
+
+  /* =========================
+   * TEXT
+   * ========================= */
+  --foreground: oklch(0.96 0 0);
+  --card-foreground: oklch(0.96 0 0);
+  --popover-foreground: oklch(0.96 0 0);
+
+  --muted-foreground: oklch(0.68 0 0);
+
+  /* =========================
+   * UI NEUTRALS
+   * ========================= */
+  --secondary: oklch(0.25 0 0);
+  --muted: oklch(0.25 0 0);
+  --accent: oklch(0.28 0 0);
+
+  --secondary-foreground: oklch(0.96 0 0);
+  --accent-foreground: oklch(0.96 0 0);
+
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
+
+  --ring: oklch(0.75 0 0);
+
+  /* =========================
+   * BRAND / ACTION
+   * ========================= */
+  --primary: oklch(0.85 0 0);
+  --primary-foreground: oklch(0.15 0 0);
+
+  --destructive: oklch(0.62 0.18 25);
+}
+
+/* =========================
+   Typography
+========================= */
+
+html,
+body {
+  height: 100%;
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+body {
+  margin: 0;
+  font-family: "Bangers", monospace;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+p {
+  margin-bottom: 1rem;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+h1 {
+  text-align: center;
+  font-size: clamp(1.225rem, 4vw, 2.5rem);
+}
+
+/* =========================
+   Layout
+========================= */
+
+section {
+  padding: 4rem 0;
+}
+
+.layout {
+  max-width: var(--max-width-layout);
+  margin: 0 auto;
+  padding: 0 var(--padding);
+  width: 100%;
+}
+
+.container {
+  max-width: var(--max-width-container);
+  margin: 0 auto;
+  padding: 0 var(--padding);
+  width: 100%;
+}
+
+/* *********************************
+BUTTON
+************************************/
+
+button,
+.button {
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+  transition: background-color 0.3s ease;
+}
+
+/* =========================
+   Header
+========================= */
+
+header {
+  height: 60px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 50;
+  background-color: var(--color-background-header);
+}
+
+.site-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
+  gap: 1rem;
+}
+
+.logo {
+  width: 100%;
+  max-width: 150px;
+  height: auto;
+}
+
+.fotogram-full-svg-letter {
+  fill: var(--color-foreground);
+}
+
+/* =========================
+   Main
+========================= */
+
+main {
+  min-height: calc(100vh - 100px);
+  padding: 120px 0;
+}
+
+.noteblock-section .section-inner {
+  width: 100%;
+  display: block;
+  flex-direction: column;
+  align-items: center;
+}
+
+.notes-section .section-inner {
+  width: 100%;
+  display: block;
+  flex-direction: column;
+  align-items: center;
+}
+
+.notes-box {
+  background
+}
+
+/* =========================
+   Footer
+========================= */
+
+footer {
+  height: 100px;
+  z-index: 50;
+  width: 100%;
+  background-color: var(--color-background-footer);
+  font-size: 0.875rem;
+}
+
+.site-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  padding: 16px;
+  text-align: center;
+}
+
+/* =========================
+   Theme  
+========================= */
+/* Reset */
+#theme-toggle .icon {
+  display: none;
+}
+
+/* LIGHT MODE */
+html.light #theme-toggle .icon-sun {
+  display: inline-flex;
+}
+
+/* DARK MODE */
+html.dark #theme-toggle .icon-moon {
+  display: inline-flex;
+}
+
+#theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-foreground);
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+#theme-toggle:hover {
+  outline: 2px solid var(--color-ring);
+}
+
+/* NOTEBLOCK */
+.row {
+  display: grid;
+  gap: 12px;
+}
+input,
+textarea,
+button {
+  font: inherit;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+
+/* .note {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 12px;
+}
+.note h3 {
+  margin: 0 0 8px;
+} */
+ 
+.meta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+}
+.small {
+  font-size: 12px;
+  opacity: 0.7;
+}
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+
+/* NOTES BOX */
+.notes-box {
+  /* background: var(--color-card, #ffffff); */
+  /* border: 1px solid rgba(0, 0, 0, 0.08); */
+  border-radius: 16px;
+  /* padding: 16px; */
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.notes-box h3 {
+  margin: 0;
+}
+
+.notes-box .trash-box {
+  background: #fafafa;
+  border-style: dashed;
+}
+
+.notes-box .notes {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 12px;
+}
+
+.notes-box .note-card {
+  padding: 1rem;
+
+  background: var(--color-card, #ffffff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  border-radius: 16px;
+}
+
+.notes-box .note-card .note-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+
+}
+
+.note-delete {
+
+}
+
